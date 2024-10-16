@@ -42,7 +42,6 @@ char twobuffer[2];
 char section[32];
 char key[32];
 char value[1024];
-char value2;
 char filepath[1024];
 char confdir[1024];
 int slot = 1;
@@ -59,11 +58,11 @@ int i, sp, check1, check2, file1, file2;
 // 13-15: Unused
 int bindings[16][260];
 int linetowrite = 0;
-int clinetowrite = 0;
-char key1[2];
-char key2[2];
-char key3[2];
-char key4[2];
+char key1[10];
+char key2[10];
+char key3[10];
+char key4[10];
+int value5, value6, value7, value8;
 float cameraspeed;
 float camera, camerax, cameray, camerapushed;
 
@@ -148,6 +147,32 @@ int punc_to_libevdev(int __ascii) {
         return 13;
     else
         return 0;
+}
+
+int string_to_libevdev(char * __string) {
+    printf("Converting %s\n", __string);
+    if(strcmp(value, "lshift") == 0)
+        return 42;
+    else if(strcmp(value, "lclick") == 0)
+        return 256; // Technically not libevdev code, 256 & 257 are added to the bottom of bindings array.
+    else if(strcmp(value, "lctrl") == 0)
+        return 29;
+    else if(strcmp(value, "lalt") == 0)
+        return 56;
+    else if(strcmp(value, "rshift") == 0)
+        return 54;
+    else if(strcmp(value, "rclick") == 0)
+        return 257;
+    else if(strcmp(value, "rctrl") == 0)
+        return 97;
+    else if(strcmp(value, "ralt") == 0)
+        return 100;
+    else if(strcmp(value, "space") == 0)
+        return 57;
+    else {
+        printf("Unknown or invalid value: %s\n", value);
+        return 0;
+    }
 }
     
 void write_slot() {
@@ -237,46 +262,26 @@ int read_profile(char * ___input)
     return 0;
 }
 
-void key_to_libevdev(int __type) {
-    // printf("%c", value[0]);
-    linetowrite = 0;
-    if (strlen(value) == 1) // we have either a letter, number or a punc. mark
-    {
-        if (isdigit(value[0]))
-        {
-            linetowrite = atoi(value) + 1;
-            if (linetowrite == 1)
-                linetowrite = 11; // KEY_0 has code 11
-        }
-        else if (isalpha(value[0]))
-            linetowrite = letter_to_libevdev(value[0]);
-        else
-            linetowrite = punc_to_libevdev(value[0]);
+int key_to_libevdev (char * __value) {
 
-        bindings[0][linetowrite] = __type;
+    if (strlen(__value) == 1) // we have either a letter, number or a punc. mark
+    {
+        printf("Length 1, string %s\n", __value);
+        if (isdigit(*__value))
+        {
+            if (atoi(__value) == 0)
+                return 11; // KEY_0 has code 11
+            else
+                return atoi(__value) + 1; 
+        }
+        else if (isalpha(*__value))
+            return letter_to_libevdev(*__value);
+        else
+            return punc_to_libevdev(*__value);
     }
-    else if(strcmp(value, "lshift") == 0)
-        linetowrite = 42;
-    else if(strcmp(value, "lclick") == 0)
-        linetowrite = 256;
-    else if(strcmp(value, "lctrl") == 0)
-        linetowrite = 29;
-    else if(strcmp(value, "lalt") == 0)
-        linetowrite = 56;
-    else if(strcmp(value, "rshift") == 0)
-        linetowrite = 54;
-    else if(strcmp(value, "rclick") == 0)
-        linetowrite = 257;
-    else if(strcmp(value, "rctrl") == 0)
-        linetowrite = 97;
-    else if(strcmp(value, "ralt") == 0)
-        linetowrite = 100;
-    else if(strcmp(value, "space") == 0)
-        linetowrite = 57;
     else
-        printf("Unknown or invalid value: %s\n", value);
-    if (linetowrite != 0)
-        bindings[0][linetowrite] = __type;
+        return string_to_libevdev(__value);
+
 }
 
 int read_button(char * ___input)
@@ -289,8 +294,9 @@ int read_button(char * ___input)
     }
     if (strcmp(key, "key") == 0)
     {
-        key_to_libevdev(1);
+        linetowrite = key_to_libevdev(value);
         write_slot();
+        bindings[0][linetowrite] = 1;
     }
     else if (strcmp(key, "locx") == 0)
         bindings[9][linetowrite] = atoi(value);
@@ -311,8 +317,8 @@ int read_switch(char * ___input)
     }
     if (strcmp(key, "key") == 0)
     {
-        key_to_libevdev(9);
-        write_slot();
+        linetowrite = key_to_libevdev(value);
+        bindings[0][linetowrite] = 9;
     }
     else if (strcmp(key, "profile") == 0)
         bindings[1][linetowrite] = atoi(value);
@@ -347,48 +353,44 @@ int read_camera(char * ___input)
 
 int read_fjoystick(char * ___input)
 {
-    readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, &value2);
-    if (readerror != 2)
+    readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s %s %s %s", key, key1, key2, key3, key4);
+    if (readerror < 2)
     {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
     if (strcmp(key, "key") == 0)
     {
-        readerror = sscanf(&value2, "%c,%c,%c,%c", key1, key2, key3, key4);
-        if (readerror != 4)
+        if (readerror != 5)
         {
-            printf("Syntax Error: Failed to parse 4-key string %s\n", &value2);
-            printf("readerror: %d, read: %c %c\n", readerror, key1[0], key2[0]);
+            printf("readerror: %d, read: %s %s %s %s\n", readerror, key1, key2, key3, key4);
             return 1;
         }
-        value[0] = key1[0];
-        value[1] = '\0';
-        key_to_libevdev(5);
-        bindings[1][linetowrite] = linetowrite;
+        printf("4 key: %s %s %s %s\n", key1, key2, key3, key4);
+        value5 = key_to_libevdev(key1);
+        value6 = key_to_libevdev(key2);
+        value7 = key_to_libevdev(key3);
+        value8 = key_to_libevdev(key4);
+        linetowrite = value5;
+        bindings[0][linetowrite] = 5;
+        bindings[1][linetowrite] = value5;
         write_slot();
-        clinetowrite = linetowrite;
-        value[0] = key2[0];
-        key_to_libevdev(6);
-        bindings[2][clinetowrite] = linetowrite;
-        bindings[1][linetowrite] = clinetowrite;
-        value[0] = key3[0];
-        key_to_libevdev(6);
-        bindings[3][clinetowrite] = linetowrite;
-        bindings[1][linetowrite] = clinetowrite;
-        value[0] = key4[0];
-        key_to_libevdev(6);
-        bindings[4][clinetowrite] = linetowrite;
-        bindings[1][linetowrite] = clinetowrite;
-
-
+        bindings[2][linetowrite] = value6;
+        bindings[3][linetowrite] = value7;
+        bindings[4][linetowrite] = value8;
+        bindings[1][value6] = value5;
+        bindings[0][value6] = 6;
+        bindings[1][value7] = value5;
+        bindings[0][value7] = 6;
+        bindings[1][value8] = value5;
+        bindings[0][value8] = 6;
     }
     else if (strcmp(key, "locx") == 0)
-        bindings[9][clinetowrite] = atoi(&value2);
+        bindings[9][linetowrite] = atoi(key1);
     else if (strcmp(key, "locy") == 0)
-        bindings[10][clinetowrite] = atoi(&value2);
+        bindings[10][linetowrite] = atoi(key1);
     else if (strcmp(key, "offset") == 0)
-        bindings[11][clinetowrite] = atoi(&value2);
+        bindings[11][linetowrite] = atoi(key1);
     else
         printf("Unknown key: %s\n", key);
 
