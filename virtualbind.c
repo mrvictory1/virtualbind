@@ -69,9 +69,7 @@ float camera, camerax, cameray, camerapushed;
 
 int letter_to_libevdev(int __ascii)
 {
-    if(__ascii >= 102 && __ascii <= 108)
-        return __ascii - 21;
-    else if(__ascii == 113)
+    if(__ascii == 113)
         return 16;
     else if(__ascii == 119)
         return 17;
@@ -97,6 +95,18 @@ int letter_to_libevdev(int __ascii)
         return 31;
     else if(__ascii == 100)
         return 32;
+    else if(__ascii == 102)
+        return 33;
+    else if(__ascii == 103)
+        return 34;
+    else if(__ascii == 104)
+        return 35;
+    else if(__ascii == 106)
+        return 36;
+    else if(__ascii == 107)
+        return 37;
+    else if(__ascii == 108)
+        return 38;
     else if(__ascii == 122)
         return 44;
     else if(__ascii == 120)
@@ -115,6 +125,31 @@ int letter_to_libevdev(int __ascii)
         return 0;
 }
 
+int punc_to_libevdev(int __ascii) {
+    if (__ascii == 44) // comma
+        return 51;
+    else if(__ascii == 46) // period
+        return 52;
+    else if(__ascii == 47) // slash
+        return 53;
+    else if(__ascii == 59) // semicolon
+        return 39;
+    else if(__ascii == 39) // apostrophe
+        return 40;
+    else if(__ascii == 91) // square bracket (open)
+        return 25;
+    else if(__ascii == 93) // square bracket (closed)
+        return 26;
+    else if(__ascii == 32) // backslash
+        return 27;
+    else if(__ascii == 45) // minus
+        return 12;
+    else if(__ascii == 61) // equals
+        return 13;
+    else
+        return 0;
+}
+    
 void write_slot() {
     bindings[12][linetowrite] = slot;
     slot++;
@@ -216,7 +251,7 @@ void key_to_libevdev(int __type) {
         else if (isalpha(value[0]))
             linetowrite = letter_to_libevdev(value[0]);
         else
-            printf("Support for punc. marks not added yet.\n");
+            linetowrite = punc_to_libevdev(value[0]);
 
         bindings[0][linetowrite] = __type;
     }
