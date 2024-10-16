@@ -11,7 +11,7 @@ Virtualbind needs configuration files in order to run. Please refer to [Wiki](ht
 * Add support for all keyboard keys
 * Add error handling
 * Add automatic input device detection
-* Remove limitations of configuration files
+* Remove limitations of configuration files (done)
 ### v0.2: Daemons & Publishing
 * Create persistent privileged daemon that launches virtualbind and stops it when needed
 * Create persistent user daemon that connects to Waydroid
@@ -21,5 +21,5 @@ Virtualbind needs configuration files in order to run. Please refer to [Wiki](ht
 ### v1.0
 * GUI
 ### v1.1
-* Context-dependent automatic profile switching
+* Context based automatic profile switching
 
