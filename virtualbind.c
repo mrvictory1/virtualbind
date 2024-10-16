@@ -439,7 +439,7 @@ void call_profile_read(char * __section, char * __input)
 
 }
 
-void create_touchscreen()
+int create_touchscreen()
 {
     xabsinfo.value = 0;
     xabsinfo.minimum = 0;
@@ -499,8 +499,11 @@ void create_touchscreen()
 
     error = libevdev_uinput_create_from_device(touchdev, LIBEVDEV_UINPUT_OPEN_MANAGED, &uidev);
 
-    if (error)
-        printf("Failed to create uinput device.\n");
+    if (error) {
+        printf("Failed to create uinput device.\n"
+        "Please check if you have root permissions.\n");
+        return 1;
+    }
     else
         printf("Touchscreen created.\n");
     check1 = libevdev_new_from_fd(fd1, &inputdev1);
@@ -509,6 +512,13 @@ void create_touchscreen()
     check2 = libevdev_new_from_fd(fd2, &inputdev2);
     if (check2 < 0)
         printf("Failed to init libevdev for mouse\n");
+    if (check1 < 0 || check2 < 0)
+    {
+        printf("Failed to initialize at least 1 input device.\n");
+        return 1;
+    }
+    else
+        return 0;
 }
 
 void read_profile_file()
@@ -749,10 +759,10 @@ int main(int argc, char **argv)
     }
     fd1 = open(keyboard, O_RDONLY);
     if (fd1 < 0)
-        printf("Failed to open device 1\n");
+        printf("Failed to open device 1.\n");
     fd2 = open(mouse, O_RDONLY);
     if (fd2 < 0)
-        printf("Failed to open device 2\n");
+        printf("Failed to open device 2.\n");
     polls[0].fd = fd1;
     polls[1].fd = fd2;
     polls[0].events = POLLIN;
@@ -774,7 +784,9 @@ int main(int argc, char **argv)
         readerror = getline(&line, &len, fp);
     }
 
-    create_touchscreen();
+    error = create_touchscreen();
+    if (error)
+        return 1;
     while (true) {
         strcpy(filepath, confdir);
         strcat(filepath, argv[1]);
