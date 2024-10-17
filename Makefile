@@ -5,7 +5,7 @@ INCLUDES := -I/usr/include/libevdev-1.0
 CFLAGS := $(XFLAGS) $(INCLUDES)
 
 OUTDIR := out
-SOURCES := virtualbind.c
+SOURCES := virtualbind.c ktl.c
 OBJS := $(SOURCES:%.c=$(OUTDIR)/%.o)
 TARGET := virtualbind
 
