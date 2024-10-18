@@ -413,10 +413,10 @@ void action_fjoystick(int scut, int ecode, int evalue) {
     // of 100, touching x:300 and y:950 will change the center of the joystick to
     // x:300 & y:950 and the character will stand still. The finger at 300,950
     // should be moved to 300,900 to move the character forward.
-    // fjoystick stands for "first touch joystick". It will first push down a 
-    // virtual finger at a specific location, then move the finger depending on
-    // the currently pushed keyboard keys. If all keys responsible for moving
-    // the joystick are lifted, the finger is also lifted.
+    // fjoystick refers to "first touch joystick". The function will first push 
+    // down a virtual finger at a specific location, then move the finger 
+    // depending on the currently pushed keyboard keys. If all keys responsible 
+    // for moving the joystick are lifted, the finger is also lifted.
 
     // scut refers to shortcut. While the profile file is read, first key in
     // [fjoystick] key= is used as primary key; 2nd, 3rd and 4th keys point 
