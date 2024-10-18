@@ -72,21 +72,17 @@ void write_slot() {
     slot++;
 }
 
-void read_new_section()
-{
+void read_new_section() {
     sscanf(line, "%*c%[qwertyuoipasdfghjklzxcvbnm]", section);
 }
 
-void read_new_section_profile()
-{
+void read_new_section_profile() {
     sscanf(line, "%*c%[qwertyuoipasdfghjklzxcvbnm]", section);
 }
 
-int open_file(char * __filepath, char * __friendlyname)
-{
+int open_file(char * __filepath, char * __friendlyname) {
     fp = fopen(__filepath, "r");
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         printf("Could not open %s file.\n"
         "File Path: %s", __friendlyname, __filepath);
         return 1;
@@ -95,8 +91,7 @@ int open_file(char * __filepath, char * __friendlyname)
 }
 
 // init refers to [init] section in virtualbind.conf file, not the file itself.
-int read_init(char * ___input)
-{
+int read_init(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
     if (readerror != 2)
     {
@@ -118,8 +113,7 @@ int read_init(char * ___input)
 
 // game refers to [game] section in com.game.name.conf file, not the file
 // itself.
-int read_game(char * ___input)
-{
+int read_game(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
     if (readerror != 2)
     {
@@ -630,6 +624,9 @@ int main(int argc, char **argv)
             call_main_read(section, line);
         readerror = getline(&line, &len, fp);
     }
+    
+    
+    
     fd1 = open(keyboard, O_RDONLY);
     if (fd1 < 0)
         printf("Failed to open device 1.\n");
@@ -648,8 +645,7 @@ int main(int argc, char **argv)
     open_file(filepath, "game configuration");
 
     readerror = getline(&line, &len, fp);
-    while (readerror != -1)
-    {
+    while (readerror != -1)  {
         if (*line == 91) // chacks if 1st character is "["
             read_new_section();
         else

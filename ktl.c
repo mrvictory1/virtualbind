@@ -83,6 +83,8 @@ int punc_to_libevdev(int __ascii) {
         return 12;
     else if(__ascii == 61) // equals
         return 13;
+    else if(__ascii == 34) // grave
+        return 41;
     else
         return 0;
 }
@@ -92,7 +94,7 @@ int string_to_libevdev(char * __string) {
     if(strcmp(__string, "lshift") == 0)
         return 42;
     else if(strcmp(__string, "lclick") == 0)
-        return 256; // Technically not libevdev code, 256 & 257 are added to the bottom of bindings array.
+        return 256; // Technically not libevdev code, 256-258 are added to the bottom of bindings array.
     else if(strcmp(__string, "lctrl") == 0)
         return 29;
     else if(strcmp(__string, "lalt") == 0)
@@ -105,8 +107,50 @@ int string_to_libevdev(char * __string) {
         return 97;
     else if(strcmp(__string, "ralt") == 0)
         return 100;
+    else if(strcmp(__string, "mclick") == 0)
+        return 258;
     else if(strcmp(__string, "space") == 0)
         return 57;
+    else if(strcmp(__string, "esc") == 0)
+        return 1;
+    else if(strcmp(__string, "f1") == 0)
+        return 59;
+    else if(strcmp(__string, "f2") == 0)
+        return 60;
+    else if(strcmp(__string, "f3") == 0)
+        return 61;
+    else if(strcmp(__string, "f4") == 0)
+        return 62;
+    else if(strcmp(__string, "f5") == 0)
+        return 63;
+    else if(strcmp(__string, "f6") == 0)
+        return 64;
+    else if(strcmp(__string, "f7") == 0)
+        return 65;
+    else if(strcmp(__string, "f8") == 0)
+        return 66;
+    else if(strcmp(__string, "f9") == 0)
+        return 67;
+    else if(strcmp(__string, "f10") == 0)
+        return 68;
+    else if(strcmp(__string, "f11") == 0)
+        return 87;
+    else if(strcmp(__string, "f12") == 0)
+        return 88;
+    else if(strcmp(__string, "tab") == 0)
+        return 15;
+    else if(strcmp(__string, "backspace") == 0)
+        return 14;
+    else if(strcmp(__string, "enter") == 0)
+        return 28;
+    else if(strcmp(__string, "up") == 0)
+        return 103;
+    else if(strcmp(__string, "down") == 0)
+        return 108;
+    else if(strcmp(__string, "left") == 0)
+        return 105;
+    else if(strcmp(__string, "right") == 0)
+        return 106;
     else {
         printf("Unknown or invalid value: %s\n", __string);
         return 0;
