@@ -9,8 +9,8 @@ Virtualbind needs configuration files in order to run. Please refer to [Wiki](ht
 ## Roadmap / TODO
 ### v0.1: Robustness
 * Add support for all keyboard keys (done)
-* Add error handling
-* Add automatic input device detection
+* Add error handling (done)
+* Add automatic input device detection (done)
 * Remove limitations of configuration files (done)
 ### v0.2: Daemons & Publishing
 * Create persistent privileged daemon that launches virtualbind and stops it when needed

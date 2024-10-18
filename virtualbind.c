@@ -4,6 +4,8 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "libevdev/libevdev.h"
 #include "libevdev/libevdev-uinput.h"
 
@@ -93,8 +95,7 @@ int open_file(char * __filepath, char * __friendlyname) {
 // init refers to [init] section in virtualbind.conf file, not the file itself.
 int read_init(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
@@ -115,13 +116,11 @@ int read_init(char * ___input) {
 // itself.
 int read_game(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
-    if (strcmp(key, "default") == 0)
-    {
+    if (strcmp(key, "default") == 0) {
         cprofile = value;
         profile = atoi(value);
         printf("Default profile will be %d.\n", profile);
@@ -136,8 +135,7 @@ int read_game(char * ___input) {
 int read_profile(char * ___input)
 {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
@@ -152,13 +150,11 @@ int read_profile(char * ___input)
 int read_button(char * ___input)
 {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
-    if (strcmp(key, "key") == 0)
-    {
+    if (strcmp(key, "key") == 0) {
         linetowrite = key_to_libevdev(value);
         write_slot();
         bindings[0][linetowrite] = 1;
@@ -172,16 +168,13 @@ int read_button(char * ___input)
     return 0;
 }
 
-int read_switch(char * ___input)
-{
+int read_switch(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
-    if (strcmp(key, "key") == 0)
-    {
+    if (strcmp(key, "key") == 0) {
         linetowrite = key_to_libevdev(value);
         bindings[0][linetowrite] = 9;
     }
@@ -192,13 +185,11 @@ int read_switch(char * ___input)
     return 0;
 }
 
-int read_camera(char * ___input)
-{
+int read_camera(char * ___input) {
     if (camera == 0)
         camera = 1;
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s", key, value);
-    if (readerror != 2)
-    {
+    if (readerror != 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
@@ -206,8 +197,7 @@ int read_camera(char * ___input)
         camerax = atoi(value);
     else if (strcmp(key, "locy") == 0)
         cameray = atoi(value);
-    else if (strcmp(key, "speed") == 0)
-    {
+    else if (strcmp(key, "speed") == 0) {
         cameraspeed = atoi(value);
         cameraspeed = cameraspeed / 100;
     }
@@ -216,22 +206,18 @@ int read_camera(char * ___input)
     return 0;
 }
 
-int read_fjoystick(char * ___input)
-{
+int read_fjoystick(char * ___input) {
     readerror = sscanf(line, "%[qwertyuoipasdfghjklzxcvbnm]=%s %s %s %s", key, key1, key2, key3, key4);
-    if (readerror < 2)
-    {
+    if (readerror < 2) {
         printf("Syntax Error: Failed to parse string %s\n", line);
         return 1;
     }
-    if (strcmp(key, "key") == 0)
-    {
-        if (readerror != 5)
-        {
-            printf("readerror: %d, read: %s %s %s %s\n", readerror, key1, key2, key3, key4);
+    if (strcmp(key, "key") == 0) {
+        if (readerror != 5) {
+            printf("Syntax error: Failed to parse string %s\n", line);
+            printf("Extracted keys: %s %s %s %s\n", key1, key2, key3, key4);
             return 1;
         }
-        printf("4 key: %s %s %s %s\n", key1, key2, key3, key4);
         value5 = key_to_libevdev(key1);
         value6 = key_to_libevdev(key2);
         value7 = key_to_libevdev(key3);
@@ -263,8 +249,7 @@ int read_fjoystick(char * ___input)
 }
 // call_main_read determines which function to call based on current section.
 // On virtualbind.conf there is only [init] at the moment.
-void call_main_read(char * __section, char * __input)
-{
+void call_main_read(char * __section, char * __input) {
     if (strcmp(__section, "init") == 0)
         read_init(__input);
     else
@@ -274,12 +259,9 @@ void call_main_read(char * __section, char * __input)
 
 // call_game_read determines which function to call based on current section.
 // On com.game.name.conf there is only [game] at the moment.
-void call_game_read(char * __section, char * __input)
-{
+void call_game_read(char * __section, char * __input) {
     if (strcmp(__section, "game") == 0)
         read_game(__input);
-    else if(strcmp(__section, "somethingelse") == 0)
-        printf("eee\n");
     else
         printf("Syntax Error: You must specify a section.");
 
@@ -287,8 +269,7 @@ void call_game_read(char * __section, char * __input)
 
 // call_profile_read determines which function to call based on current section.
 // On com.game.name.#.conf there are [profile], [button], [fjoystick] and more.
-void call_profile_read(char * __section, char * __input)
-{
+void call_profile_read(char * __section, char * __input) {
     if (strcmp(__section, "profile") == 0)
         read_profile(__input);
     else if(strcmp(__section, "button") == 0)
@@ -306,8 +287,7 @@ void call_profile_read(char * __section, char * __input)
 
 }
 
-int create_touchscreen()
-{
+int create_touchscreen() {
     xabsinfo.value = 0;
     xabsinfo.minimum = 0;
     xabsinfo.maximum = 1599;
@@ -379,8 +359,7 @@ int create_touchscreen()
     check2 = libevdev_new_from_fd(fd2, &inputdev2);
     if (check2 < 0)
         printf("Failed to init libevdev for mouse\n");
-    if (check1 < 0 || check2 < 0)
-    {
+    if (check1 < 0 || check2 < 0) {
         printf("Failed to initialize at least 1 input device.\n");
         return 1;
     }
@@ -388,40 +367,33 @@ int create_touchscreen()
         return 0;
 }
 
-void read_profile_file()
-{
+void read_profile_file() {
     readerror = getline(&line, &len, fp);
-    while (readerror != -1)
-    {
+    while (readerror != -1) {
         if (*line == 91) // chacks if 1st character is "["
             read_new_section_profile();
-        else
+        else if(*line != 35) // checks if 1st character is not "#"
             call_profile_read(section, line);
         readerror = getline(&line, &len, fp);
     }
 
+    /* Prints data imported from current profile file
     int i, j;
-
-    for (i = 0; i < 260; i++)
-    {
+    for (i = 0; i < 260; i++) {
         printf("Code %3d |", i);
         for (j = 0; j < 15; j++)
-        {
             printf("%4d|", bindings[j][i]);
-        }
         printf("\n");
     }
-    printf("Initializing...\n");
-
+    */
 }
 
-void action_button(int ecode, int evalue) // Only 1 key, FIXME
+void action_button(int ecode, int evalue) 
 {
     libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_SLOT, bindings[12][ecode]+1);
     if (evalue == 0)
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, -1);
-    else if (evalue == 1)
-    {
+    else if (evalue == 1) {
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, bindings[12][ecode]+1);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, bindings[9][ecode]);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_Y, bindings[10][ecode]);
@@ -429,29 +401,44 @@ void action_button(int ecode, int evalue) // Only 1 key, FIXME
     libevdev_uinput_write_event(uidev, EV_SYN, 0, 0);
 }
 
-void action_fjoystick(int scut, int ecode, int evalue)
-{
-    if (scut == 0)
-        scut = ecode;
+void action_fjoystick(int scut, int ecode, int evalue) {
+    // This is perhaps the most complex part of virtualbind.
+    // Some games have a fixed joystick position, so when a certain location
+    // is touched, a certain action will occur. For example if joystick is
+    // centered at x:300 and y:1000 and has a radius of 100, touching x:300 and
+    // y:950 will move the character forward. Simple.
+    
+    // Some games relocate the joystick position to initial contact location.
+    // For example, if joystick is centered at x:300 and y:1000 and has a radius
+    // of 100, touching x:300 and y:950 will change the center of the joystick to
+    // x:300 & y:950 and the character will stand still. The finger at 300,950
+    // should be moved to 300,900 to move the character forward.
+    // fjoystick stands for "first touch joystick". It will first push down a 
+    // virtual finger at a specific location, then move the finger depending on
+    // the currently pushed keyboard keys. If all keys responsible for moving
+    // the joystick are lifted, the finger is also lifted.
+
+    // scut refers to shortcut. While the profile file is read, first key in
+    // [fjoystick] key= is used as primary key; 2nd, 3rd and 4th keys point 
+    // to the first key. scut is used as "currently pushed key" while ecode
+    // points to the primary key which holds all the data like currently 
+    // pushed keys, x/y locations, offset etc.
+
     libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_SLOT, bindings[12][ecode]+1);
-    if (evalue == 1)
-    {
+    if (evalue == 1) {
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, bindings[12][ecode]+1);
-        if (bindings[5][ecode] == 0 && bindings[6][ecode] == 0 && bindings[7][ecode] == 0 && bindings[8][ecode] == 0)
-        {
+        if (bindings[5][ecode] == 0 && bindings[6][ecode] == 0 && bindings[7][ecode] == 0 && bindings[8][ecode] == 0) {
+            // If any key was not pressed before, perform initial contect.
             libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, bindings[9][ecode]);
             libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_Y, bindings[10][ecode]);
             libevdev_uinput_write_event(uidev, EV_SYN, 0, 0);
         }
-        for (i = 5; i < 9; i++)
-        {
-            printf("bit%d: %d\n", i, bindings[i][ecode]);
+        for (i = 5; i < 9; i++) {
+            // Set the status of current key to "pressed".
             if (bindings[i-4][ecode] == scut)
-            {
                 bindings[i][ecode] = 1;
-                printf("Bit switch! ecode: %d, i: %d\n", ecode, i);
-            }
         }
+        // Determine the X/Y location of the finger and move the finger.
         pushx = bindings[9][ecode] - (bindings[6][ecode] * bindings[11][ecode]) + (bindings[8][ecode] * bindings[11][ecode]);
         pushy = bindings[10][ecode] - (bindings[5][ecode] * bindings[11][ecode]) + (bindings[7][ecode] * bindings[11][ecode]);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, pushx);
@@ -460,21 +447,18 @@ void action_fjoystick(int scut, int ecode, int evalue)
     }
     else if (evalue == 0)
     {
-        for (i = 5; i < 9; i++)
-        {
-            printf("bit%d: %d\n", i, bindings[i][ecode]);
+        for (i = 5; i < 9; i++) {
+            // Set the status of current key to "not pressed".
             if (bindings[i-4][ecode] == scut)
-            {
                 bindings[i][ecode] = 0;
-                printf("Bit switch! ecode: %d\n", ecode);
-            }
         }
-        if (bindings[5][ecode] == 0 && bindings[6][ecode] == 0 && bindings[7][ecode] == 0 && bindings[8][ecode] == 0)
-        {
+        if (bindings[5][ecode] == 0 && bindings[6][ecode] == 0 && bindings[7][ecode] == 0 && bindings[8][ecode] == 0)  {
+            // Lift finger if no keys are pressed anymore.
             libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, -1);
             libevdev_uinput_write_event(uidev, EV_SYN, 0, 0);
         }
         else {
+            // Otherwise move the finger.
             pushx = bindings[9][ecode] - (bindings[6][ecode] * bindings[11][ecode]) + (bindings[8][ecode] * bindings[11][ecode]);
             pushy = bindings[10][ecode] - (bindings[5][ecode] * bindings[11][ecode]) + (bindings[7][ecode] * bindings[11][ecode]);
             libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, pushx);
@@ -487,21 +471,18 @@ void action_fjoystick(int scut, int ecode, int evalue)
 void action_camera(int ecode, int evalue)
 {
     libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_SLOT, 99);
-    if (camerapushed == 0)
-    {
+    if (camerapushed == 0) {
         camerapushed = 1;
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, 99);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, camerax);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_Y, cameray);
         libevdev_uinput_write_event(uidev, EV_SYN, 0, 0);
     }
-    if (ecode == 0)
-    {
+    if (ecode == 0) {
         camerax = camerax + evalue*cameraspeed;
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_X, camerax);
     }
-    else if(ecode == 1)
-    {
+    else if(ecode == 1) {
         cameray = cameray + evalue*cameraspeed;
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_POSITION_Y, cameray);
     }
@@ -511,33 +492,24 @@ void action_camera(int ecode, int evalue)
 void read_keyboard_event(struct input_event *ev) {
     if(ev->type == 1) // EV_KEY
     {
-        if (bindings[0][ev->code] == 0)
-            printf("Dropping Input\n");
-        else
-        {
+        if (bindings[0][ev->code] != 0) {
             action = bindings[0][ev->code];
             printf("action: %d, code: %d\n", action, ev->code);
             if (action == 1)
                 action_button(ev->code, ev->value);
             else if (action == 5)
-                action_fjoystick(0, ev->code, ev->value);
+                action_fjoystick(ev->code, ev->code, ev->value);
             else if (action == 6)
                 action_fjoystick(ev->code ,bindings[1][ev->code], ev->value);
             else if(action == 9)
                 sp = bindings[1][ev->code];
-            else
-                printf("action: %d, code: %d\n", action, ev->code);
         }
     }
 }
 
 void read_mouse_event(struct input_event *ev) {
-    if(ev->type == 1) // EV_KEY
-    {
-        if (bindings[0][ev->code - 16] == 0)
-            printf("Dropping Input\n");
-        else
-        {
+    if(ev->type == 1) { // EV_KEY
+        if (bindings[0][ev->code - 16] != 0) {
             action = bindings[0][ev->code - 16];
             printf("action: %d, code: %d\n", action, ev->code - 16);
             if (action == 1)
@@ -553,20 +525,16 @@ void read_mouse_event(struct input_event *ev) {
 }
 
 void perform_keybinding() {
-    while (sp == 0)
-    {
+    while (sp == 0) {
         avail1 = libevdev_has_event_pending(inputdev1);
-        if (avail1)
-        {
+        if (avail1) {
             libevdev_next_event(inputdev1, LIBEVDEV_READ_FLAG_NORMAL|LIBEVDEV_READ_FLAG_BLOCKING, &ev);
             read_keyboard_event(&ev);
         }
         avail2 = libevdev_has_event_pending(inputdev2);
-        if (avail2)
-        {
+        if (avail2) {
             libevdev_next_event(inputdev2, LIBEVDEV_READ_FLAG_NORMAL|LIBEVDEV_READ_FLAG_BLOCKING, &ev);
             read_mouse_event(&ev);
-
         }
         if (avail1 == 0 && avail2 == 0)
             poll(polls, 2, -1);
@@ -575,8 +543,7 @@ void perform_keybinding() {
 
 int switch_profile()
 {
-    for (i = 0; i < slot + 1; i++)
-    {
+    for (i = 0; i < slot + 1; i++) {
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_SLOT, i);
         libevdev_uinput_write_event(uidev, EV_ABS, ABS_MT_TRACKING_ID, -1);
         libevdev_uinput_write_event(uidev, EV_SYN, 0, 0);
@@ -602,10 +569,57 @@ int switch_profile()
     return 0;
 }
 
+int auto_detect_devices() {
+    char *eventkbd = "event-kbd";
+    char *eventmouse = "event-mouse";
+    if (*keyboard && *mouse) 
+        return 0;
+    else {
+        DIR *dirp;   
+        dirp = opendir("/dev/input/by-id/");
+        struct dirent *inputfile;
+        inputfile = readdir(dirp);
+        printf("Searching for input devices...\n");
+        while (inputfile != NULL) {
+            printf("%s\n", inputfile->d_name);
+            if (!*keyboard && strstr(inputfile->d_name, eventkbd)) {
+                printf("Found keyboard!\n");
+                if (*keyboard) {
+                    printf("More than 1 keyboard found. Bailing out. Keep\n"
+                           "in mind that some devices may appear as multiple \n"
+                           "keyboards and confuse the application.\n");
+                    return 1;
+                }
+                strcpy(keyboard, "/dev/input/by-id/");
+                strcat(keyboard, inputfile->d_name);
+            }
+            if (!*mouse && strstr(inputfile->d_name, eventmouse)) {
+                printf("Found mouse!\n");
+                if (*mouse) {
+                    printf("More than 1 mice found. Bailing out.\n");
+                    return 1;
+                }
+                strcpy(mouse, "/dev/input/by-id/");
+                strcat(mouse, inputfile->d_name);
+            }
+            inputfile = readdir(dirp);
+        }
+    }
+    if (!*keyboard || !* mouse) {
+        printf("Autodetection failed for:");
+        if (!*keyboard)
+            printf("keyboard");
+        if (!*mouse)
+            printf("mouse");
+        return 1;
+    }
+    return 0;
+
+}
+
 int main(int argc, char **argv)
 {
-    if (argc != 2)
-    {
+    if (argc != 2) {
         printf("Welcome to virtualbind! The program takes a single argument:\n"
         "the name of the configuration file set you want to load.\n");
         return 0;
@@ -616,16 +630,17 @@ int main(int argc, char **argv)
     open_file("/etc/virtualbind/virtualbind.conf", "main configuration");
 
     readerror = getline(&line, &len, fp);
-    while (readerror != -1)
-    {
-        if (*line == 91) // chacks if 1st character is "["
+    while (readerror != -1) {
+        if (*line == 91) // checks if 1st character is "["
             read_new_section();
-        else
+        else if(*line != 35) // checks if 1st character is not "#"
             call_main_read(section, line);
         readerror = getline(&line, &len, fp);
     }
     
-    
+    error = auto_detect_devices();
+    if (error)
+        return 1;
     
     fd1 = open(keyboard, O_RDONLY);
     if (fd1 < 0)
@@ -648,7 +663,7 @@ int main(int argc, char **argv)
     while (readerror != -1)  {
         if (*line == 91) // chacks if 1st character is "["
             read_new_section();
-        else
+        else if(*line != 35) // checks if 1st character is not "#"
             call_game_read(section, line);
         readerror = getline(&line, &len, fp);
     }
