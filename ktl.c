@@ -4,177 +4,106 @@
 #include <string.h>
 #include <ctype.h>
 
-int letter_to_libevdev(int __ascii)
-{
-    if(__ascii == 113)
-        return 16;
-    else if(__ascii == 119)
-        return 17;
-    else if(__ascii == 101)
-        return 18;
-    else if(__ascii == 114)
-        return 19;
-    else if(__ascii == 116)
-        return 20;
-    else if(__ascii == 121)
-        return 21;
-    else if(__ascii == 117)
-        return 22;
-    else if(__ascii == 105)
-        return 23;
-    else if(__ascii == 111)
-        return 24;
-    else if(__ascii == 112)
-        return 25;
-    else if(__ascii == 97)
-        return 30;
-    else if(__ascii == 115)
-        return 31;
-    else if(__ascii == 100)
-        return 32;
-    else if(__ascii == 102)
-        return 33;
-    else if(__ascii == 103)
-        return 34;
-    else if(__ascii == 104)
-        return 35;
-    else if(__ascii == 106)
-        return 36;
-    else if(__ascii == 107)
-        return 37;
-    else if(__ascii == 108)
-        return 38;
-    else if(__ascii == 122)
-        return 44;
-    else if(__ascii == 120)
-        return 45;
-    else if(__ascii == 99)
-        return 46;
-    else if(__ascii == 118)
-        return 47;
-    else if(__ascii == 98)
-        return 48;
-    else if(__ascii == 110)
-        return 49;
-    else if(__ascii == 109)
-        return 50;
-    else
-        return 0;
-}
-
-int punc_to_libevdev(int __ascii) {
-    if (__ascii == 44) // comma
-        return 51;
-    else if(__ascii == 46) // period
-        return 52;
-    else if(__ascii == 47) // slash
-        return 53;
-    else if(__ascii == 59) // semicolon
-        return 39;
-    else if(__ascii == 39) // apostrophe
-        return 40;
-    else if(__ascii == 91) // square bracket (open)
-        return 25;
-    else if(__ascii == 93) // square bracket (closed)
-        return 26;
-    else if(__ascii == 32) // backslash
-        return 27;
-    else if(__ascii == 45) // minus
-        return 12;
-    else if(__ascii == 61) // equals
-        return 13;
-    else if(__ascii == 34) // grave
-        return 41;
-    else
-        return 0;
-}
-
-int string_to_libevdev(char * __string) {
-    printf("Converting %s\n", __string);
-    if(strcmp(__string, "lshift") == 0)
-        return 42;
-    else if(strcmp(__string, "lclick") == 0)
-        return 256; // Technically not libevdev code, 256-258 are added to the bottom of bindings array.
-    else if(strcmp(__string, "lctrl") == 0)
-        return 29;
-    else if(strcmp(__string, "lalt") == 0)
-        return 56;
-    else if(strcmp(__string, "rshift") == 0)
-        return 54;
-    else if(strcmp(__string, "rclick") == 0)
-        return 257;
-    else if(strcmp(__string, "rctrl") == 0)
-        return 97;
-    else if(strcmp(__string, "ralt") == 0)
-        return 100;
-    else if(strcmp(__string, "mclick") == 0)
-        return 258;
-    else if(strcmp(__string, "space") == 0)
-        return 57;
-    else if(strcmp(__string, "esc") == 0)
-        return 1;
-    else if(strcmp(__string, "f1") == 0)
-        return 59;
-    else if(strcmp(__string, "f2") == 0)
-        return 60;
-    else if(strcmp(__string, "f3") == 0)
-        return 61;
-    else if(strcmp(__string, "f4") == 0)
-        return 62;
-    else if(strcmp(__string, "f5") == 0)
-        return 63;
-    else if(strcmp(__string, "f6") == 0)
-        return 64;
-    else if(strcmp(__string, "f7") == 0)
-        return 65;
-    else if(strcmp(__string, "f8") == 0)
-        return 66;
-    else if(strcmp(__string, "f9") == 0)
-        return 67;
-    else if(strcmp(__string, "f10") == 0)
-        return 68;
-    else if(strcmp(__string, "f11") == 0)
-        return 87;
-    else if(strcmp(__string, "f12") == 0)
-        return 88;
-    else if(strcmp(__string, "tab") == 0)
-        return 15;
-    else if(strcmp(__string, "backspace") == 0)
-        return 14;
-    else if(strcmp(__string, "enter") == 0)
-        return 28;
-    else if(strcmp(__string, "up") == 0)
-        return 103;
-    else if(strcmp(__string, "down") == 0)
-        return 108;
-    else if(strcmp(__string, "left") == 0)
-        return 105;
-    else if(strcmp(__string, "right") == 0)
-        return 106;
-    else {
-        printf("Unknown or invalid value: %s\n", __string);
-        return 0;
+// Map ASCII letters to libevdev key codes
+int letter_to_libevdev(int ascii) {
+    switch (ascii) {
+        case 'q': return 16;
+        case 'w': return 17;
+        case 'e': return 18;
+        case 'r': return 19;
+        case 't': return 20;
+        case 'y': return 21;
+        case 'u': return 22;
+        case 'i': return 23;
+        case 'o': return 24;
+        case 'p': return 25;
+        case 'a': return 30;
+        case 's': return 31;
+        case 'd': return 32;
+        case 'f': return 33;
+        case 'g': return 34;
+        case 'h': return 35;
+        case 'j': return 36;
+        case 'k': return 37;
+        case 'l': return 38;
+        case 'z': return 44;
+        case 'x': return 45;
+        case 'c': return 46;
+        case 'v': return 47;
+        case 'b': return 48;
+        case 'n': return 49;
+        case 'm': return 50;
+        default: return 0;
     }
 }
 
-int key_to_libevdev (char * __value) {
+// Map ASCII punctuation marks to libevdev key codes
+int punc_to_libevdev(int ascii) {
+    switch (ascii) {
+        case ',': return 51;
+        case '.': return 52;
+        case '/': return 53;
+        case ';': return 39;
+        case '\'': return 40;
+        case '[': return 25;
+        case ']': return 26;
+        case '\\': return 27;
+        case '-': return 12;
+        case '=': return 13;
+        case '`': return 41;
+        default: return 0;
+    }
+}
 
-    if (strlen(__value) == 1) // we have either a letter, number or a punc. mark
-    {
-        printf("Length 1, string %s\n", __value);
-        if (isdigit(*__value))
-        {
-            if (atoi(__value) == 0)
-                return 11; // KEY_0 has code 11
-            else
-                return atoi(__value) + 1; 
+// Map string names to libevdev key codes
+int string_to_libevdev(char* string) {
+    printf("Converting %s\n", string);
+    if (strcmp(string, "lshift") == 0) return 42;
+    if (strcmp(string, "lclick") == 0) return 256; // Custom
+    if (strcmp(string, "lctrl") == 0) return 29;
+    if (strcmp(string, "lalt") == 0) return 56;
+    if (strcmp(string, "rshift") == 0) return 54;
+    if (strcmp(string, "rclick") == 0) return 257; // Custom
+    if (strcmp(string, "rctrl") == 0) return 97;
+    if (strcmp(string, "ralt") == 0) return 100;
+    if (strcmp(string, "mclick") == 0) return 258; // Custom
+    if (strcmp(string, "space") == 0) return 57;
+    if (strcmp(string, "esc") == 0) return 1;
+    if (strcmp(string, "f1") == 0) return 59;
+    if (strcmp(string, "f2") == 0) return 60;
+    if (strcmp(string, "f3") == 0) return 61;
+    if (strcmp(string, "f4") == 0) return 62;
+    if (strcmp(string, "f5") == 0) return 63;
+    if (strcmp(string, "f6") == 0) return 64;
+    if (strcmp(string, "f7") == 0) return 65;
+    if (strcmp(string, "f8") == 0) return 66;
+    if (strcmp(string, "f9") == 0) return 67;
+    if (strcmp(string, "f10") == 0) return 68;
+    if (strcmp(string, "f11") == 0) return 87;
+    if (strcmp(string, "f12") == 0) return 88;
+    if (strcmp(string, "tab") == 0) return 15;
+    if (strcmp(string, "backspace") == 0) return 14;
+    if (strcmp(string, "enter") == 0) return 28;
+    if (strcmp(string, "up") == 0) return 103;
+    if (strcmp(string, "down") == 0) return 108;
+    if (strcmp(string, "left") == 0) return 105;
+    if (strcmp(string, "right") == 0) return 106;
+
+    printf("Unknown or invalid value: %s\n", string);
+    return 0;
+}
+
+// Determine the libevdev key code for a given value
+int key_to_libevdev(char* value) {
+    if (strlen(value) == 1) {
+        printf("Length 1, string %s\n", value);
+        if (isdigit(*value)) {
+            return (*value == '0') ? 11 : atoi(value) + 1;
         }
-        else if (isalpha(*__value))
-            return letter_to_libevdev(*__value);
-        else
-            return punc_to_libevdev(*__value);
+        if (isalpha(*value)) {
+            return letter_to_libevdev(*value);
+        }
+        return punc_to_libevdev(*value);
     }
-    else
-        return string_to_libevdev(__value);
-
+    return string_to_libevdev(value);
 }
