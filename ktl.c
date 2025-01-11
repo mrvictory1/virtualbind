@@ -15,6 +15,7 @@ static const int ascii_to_libevdev[128] = {
     [','] = 51, ['.'] = 52, ['/'] = 53, [';'] = 39, ['\''] = 40,
     ['['] = 25, [']'] = 26, ['\\'] = 27, ['-'] = 12, ['='] = 13,
     ['`'] = 41,
+    
 };
 
 // Hash table for string-to-libevdev key mapping
