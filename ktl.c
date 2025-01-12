@@ -15,7 +15,7 @@ static const int ascii_to_libevdev[128] = {
     [','] = 51, ['.'] = 52, ['/'] = 53, [';'] = 39, ['\''] = 40,
     ['['] = 25, [']'] = 26, ['\\'] = 27, ['-'] = 12, ['='] = 13,
     ['`'] = 41,
-    
+
 };
 
 // Hash table for string-to-libevdev key mapping
@@ -31,10 +31,11 @@ static const KeyValue string_to_libevdev_map[] = {
     {"f1", 59}, {"f10", 68}, {"f11", 87}, {"f12", 88}, {"f2", 60},
     {"f3", 61}, {"f4", 62}, {"f5", 63}, {"f6", 64}, {"f7", 65},
     {"f8", 66}, {"f9", 67}, {"lalt", 56}, {"lclick", 256},
-    {"lctrl", 29}, {"lshift", 42}, {"mclick", 258}, {"ralt", 100},
-    {"rclick", 257}, {"rctrl", 97}, {"rshift", 54}, {"space", 57},
-    {"tab", 15}, {"up", 103}, {"left", 105}, {"right", 106},
+    {"lctrl", 29}, {"left", 105}, {"lshift", 42}, {"mclick", 258},
+    {"ralt", 100}, {"rclick", 257}, {"rctrl", 97}, {"right", 106},
+    {"rshift", 54}, {"space", 57}, {"tab", 15}, {"up", 103},
 };
+
 
 #define STRING_MAP_SIZE (sizeof(string_to_libevdev_map) / sizeof(string_to_libevdev_map[0]))
 
@@ -65,7 +66,7 @@ int string_to_libevdev(const char *string) {
 int key_to_libevdev(const char *value) {
     if (!value || *value == '\0') { // Validate input
         fprintf(stderr, "Error: Null or empty string passed to key_to_libevdev\n");
-        return 0; // Return 0 for invalid input
+        return 0; 
     }
 
     if (strlen(value) == 1) { // Single character case
